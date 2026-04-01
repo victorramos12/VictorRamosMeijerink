@@ -62,12 +62,16 @@
             </div>
         </section>
         <!-- Projects-->
-        <section class="projects-section bg-light p-5" id="projects">
+        <section class="projects-section bg-light" id="projects">
             <div class="container text-center mb-5 mt-1">
-                <button class="btn btn-primary" onclick="loadProjects('Java')" disabled>Java Projects</button>
-                <button class="btn btn-primary" onclick="loadProjects('Game')">Game Projects</button>
+                <h2 class="mb-4">Meus Projetos</h2>
+                <div class="btn-group shadow-sm" role="group" style="border-radius: 50px; overflow: hidden;">
+                    <button id="btnJava" class="btn btn-outline-primary px-4 py-2">Java Backend</button>
+                    <button id="btnGame" class="btn btn-primary px-4 py-2">Game Dev (UE5)</button>
+                </div>
             </div>
-            <div id="projectsContainer" class="container px-4 px-lg-5"></div>
+            <div id="projectsContainer" class="container px-4 px-lg-5 opacity-0" style="transition: opacity 0.5s ease-in-out;">
+            </div>
         </section>
         <!-- Contact-->
         <section class="contact-section bg-black">
@@ -112,24 +116,49 @@
     </body>
 
     <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
-        
-        function loadProjects(type){
-            let container = document.getElementById("projectsContainer");
-            if(type === "Java"){
-                fetch("javaDev.html")
-                    .then(response => response.text())
-                    .then(html => {
-                        container.innerHTML = html;
-                    })
-            }else if(type === "Game"){
-                fetch("gameDev.html")
-                    .then(response => response.text())
-                    .then(html => {
-                        container.innerHTML = html;
-                    })
-            }
+    document.addEventListener("DOMContentLoaded", function() {
+        // Atualiza o ano no footer
+        const yearEl = document.getElementById("year");
+        if(yearEl) yearEl.textContent = new Date().getFullYear();
 
+        const container = document.getElementById("projectsContainer");
+
+        function loadProjects(type) {
+            // Ajuste de caminho para o GitHub Pages (garante que procure na raiz do repositório)
+            const file = type === "Java" ? "javaDev.html" : "gameDev.html";
+            
+            // 1. Esconde o container para a transição
+            container.style.opacity = "0";
+
+            setTimeout(() => {
+                fetch(file)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Arquivo não encontrado");
+                        return response.text();
+                    })
+                    .then(html => {
+                        container.innerHTML = html;
+                        // 2. IMPORTANTE: Volta a opacidade para 1 para o conteúdo aparecer
+                        container.classList.remove("opacity-0");
+                        container.style.opacity = "1";
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        container.innerHTML = "<p class='text-center'>Erro ao carregar projetos. Verifique se o arquivo existe.</p>";
+                        container.style.opacity = "1";
+                    });
+            }, 300);
         }
-    </script>
+
+        // Atribui os eventos aos botões
+        //const btnJava = document.getElementById("btnJava");
+        const btnGame = document.getElementById("btnGame");
+
+        //if(btnJava) btnJava.addEventListener("click", () => loadProjects('Java'));
+        if(btnGame) btnGame.addEventListener("click", () => loadProjects('Game'));
+
+        // Carrega o Game Dev por padrão
+        loadProjects('Game');
+    });
+</script>
 </html>

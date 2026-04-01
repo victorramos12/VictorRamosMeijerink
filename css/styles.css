@@ -4671,15 +4671,20 @@ textarea.form-control-lg {
   --bs-badge-color: #fff;
   --bs-badge-border-radius: 0.375rem;
   display: inline-block;
-  padding: var(--bs-badge-padding-y) var(--bs-badge-padding-x);
-  font-size: var(--bs-badge-font-size);
-  font-weight: var(--bs-badge-font-weight);
+  /* padding: var(--bs-badge-padding-y) var(--bs-badge-padding-x); */
+  /* font-size: var(--bs-badge-font-size); */
+  /* font-weight: var(--bs-badge-font-weight); */
   line-height: 1;
   color: var(--bs-badge-color);
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: var(--bs-badge-border-radius);
+  padding: 0.5em 1em;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
 }
 .badge:empty {
   display: none;
@@ -11200,4 +11205,17 @@ body {
 
 .footer {
   padding: 5rem 0;
+}
+
+#projectsContainer {
+    padding-bottom: 5rem;
+}
+
+.row.gx-0.shadow-sm {
+    transition: transform 0.3s ease, shadow 0.3s ease;
+}
+
+.row.gx-0.shadow-sm:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
 }
