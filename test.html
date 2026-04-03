@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Victor R. Meijerink — Dev Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --accent: #00e5ff;
+      --accent2: #7b2fff;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --border: rgba(255,255,255,0.08);
+      --glow: 0 0 40px rgba(0,229,255,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s ease;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.18s ease, width 0.2s, height 0.2s, opacity 0.2s;
+      opacity: 0.6;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.5;
+    }
+
+    /* GRID BACKGROUND */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: 
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 1.5rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(10,10,15,0.95), transparent);
+      backdrop-filter: blur(4px);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 0 3rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-inner { max-width: 900px; }
+    .hero-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s ease forwards;
+    }
+    .hero-tag::before { content: '— '; }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.35s ease forwards;
+    }
+    .hero h1 .accent { color: var(--accent); }
+    .hero h1 .dim { color: var(--muted); }
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 480px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s ease forwards;
+    }
+    .hero-cta {
+      margin-top: 3rem;
+      display: flex; gap: 1.2rem; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.65s ease forwards;
+    }
+    .btn-primary-custom {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 0.85rem 2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: none;
+      transition: box-shadow 0.2s, transform 0.2s;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    }
+    .btn-primary-custom:hover { box-shadow: var(--glow); transform: translateY(-2px); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.85rem 2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* FLOATING ELEMENTS HERO */
+    .hero-gfx {
+      position: absolute; right: 5%; top: 50%;
+      transform: translateY(-50%);
+      width: 380px; height: 380px;
+      opacity: 0;
+      animation: fadeIn 1.2s 0.8s ease forwards;
+    }
+    .hero-gfx svg { width: 100%; height: 100%; }
+
+    /* ABOUT */
+    .about {
+      padding: 8rem 3rem;
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .section-label::before { content: '// '; }
+    .about h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+    .about p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.9;
+      margin-bottom: 1rem;
+    }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .skill-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.2rem 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .skill-item::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--accent2);
+    }
+    .skill-item:hover { border-color: var(--accent2); transform: translateX(4px); }
+    .skill-item h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .skill-item p { font-size: 0.72rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+    /* PROJECTS */
+    .projects {
+      padding: 6rem 3rem;
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .projects-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 4rem;
+    }
+    .projects-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 800;
+    }
+    .filter-group { display: flex; gap: 0.5rem; }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.5rem 1.2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: none;
+      transition: all 0.2s;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+
+    /* FEATURED PROJECT */
+    .featured-project {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 0;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s;
+      overflow: hidden;
+    }
+    .featured-project:hover { border-color: rgba(0,229,255,0.3); }
+    .project-media {
+      aspect-ratio: 16/9;
+      background: var(--surface2);
+      overflow: hidden;
+      position: relative;
+    }
+    .project-media iframe { width: 100%; height: 100%; border: none; }
+    .project-media .play-overlay {
+      position: absolute; inset: 0;
+      background: rgba(10,10,15,0.6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      cursor: none;
+      transition: opacity 0.3s;
+    }
+    .project-info {
+      background: var(--surface);
+      padding: 2.5rem;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .project-number {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .project-info h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      line-height: 1.1;
+    }
+    .tag-list { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+    .tag {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(0,229,255,0.3);
+      padding: 0.25rem 0.6rem;
+    }
+    .project-info p { font-size: 0.8rem; color: var(--muted); line-height: 1.8; margin-bottom: 0.75rem; }
+    .project-info p strong { color: var(--text); font-weight: 700; }
+
+    /* PROJECT GRID */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .project-card {
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: var(--surface);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .project-card:hover { border-color: rgba(123,47,255,0.4); transform: translateY(-4px); }
+    .project-card .project-media { aspect-ratio: 16/9; }
+    .project-card .project-info { padding: 1.8rem; }
+    .project-card .project-info h3 { font-size: 1.15rem; }
+
+    /* CONTACT */
+    .contact {
+      padding: 8rem 3rem;
+      position: relative; z-index: 1;
+      max-width: 800px; margin: 0 auto;
+      text-align: center;
+    }
+    .contact .section-label { justify-content: center; display: block; }
+    .contact h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      margin-bottom: 1.5rem;
+    }
+    .contact h2 .accent { color: var(--accent); }
+    .contact p { color: var(--muted); font-size: 0.85rem; line-height: 1.8; margin-bottom: 3rem; }
+    .contact-links {
+      display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .contact-link {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 1rem 1.8rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+      cursor: none;
+    }
+    .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+    .contact-link svg { width: 18px; height: 18px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      position: relative; z-index: 1;
+    }
+    footer p { font-size: 0.68rem; color: var(--muted); }
+    .footer-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+
+    /* SECTION DIVIDER */
+    .divider {
+      max-width: 1200px; margin: 0 auto;
+      border: none; border-top: 1px solid var(--border);
+      position: relative; z-index: 1;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spinReverse {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    .spin { animation: spin 12s linear infinite; transform-origin: center; }
+    .spin-reverse { animation: spinReverse 8s linear infinite; transform-origin: center; }
+
+    /* SCROLL REVEAL */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 1.5rem; }
+      .hero { padding: 0 1.5rem; }
+      .hero-gfx { display: none; }
+      .about {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        padding: 5rem 1.5rem;
+      }
+      .projects { padding: 5rem 1.5rem; }
+      .projects-header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+      .featured-project { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .contact { padding: 5rem 1.5rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#top">VRM_</a>
+    <ul class="nav-links">
+      <li><a href="#about">Sobre</a></li>
+      <li><a href="#projects">Projetos</a></li>
+      <li><a href="#contact">Contato</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <p class="hero-tag">Gameplay Programmer & Java Developer</p>
+      <h1>
+        Victor<br>
+        <span class="accent">R.</span> Meij<span class="dim">erink</span>
+      </h1>
+      <p class="hero-sub">
+        Especialista em sistemas de gameplay com Unreal Engine 5 e C++.<br>
+        Desenvolvedor Fullstack com foco em Java, APIs REST e backends escaláveis.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn-primary-custom">Ver Projetos</a>
+        <a href="#contact" class="btn-ghost">Entrar em Contato</a>
+      </div>
+    </div>
+
+    <!-- SVG Graphic -->
+    <div class="hero-gfx">
+      <svg viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="190" cy="190" r="150" stroke="rgba(0,229,255,0.08)" stroke-width="1"/>
+        <circle cx="190" cy="190" r="120" stroke="rgba(0,229,255,0.06)" stroke-width="1" stroke-dasharray="4 8"/>
+        <circle cx="190" cy="190" r="90" stroke="rgba(123,47,255,0.1)" stroke-width="1"/>
+        <g class="spin">
+          <circle cx="190" cy="40" r="5" fill="#00e5ff" opacity="0.9"/>
+          <circle cx="340" cy="190" r="3" fill="#00e5ff" opacity="0.5"/>
+          <circle cx="190" cy="340" r="4" fill="#7b2fff" opacity="0.7"/>
+          <circle cx="40" cy="190" r="3" fill="#7b2fff" opacity="0.5"/>
+        </g>
+        <g class="spin-reverse">
+          <circle cx="284" cy="96" r="4" fill="#00e5ff" opacity="0.6"/>
+          <circle cx="284" cy="284" r="3" fill="#7b2fff" opacity="0.6"/>
+          <circle cx="96" cy="284" r="4" fill="#00e5ff" opacity="0.4"/>
+          <circle cx="96" cy="96" r="3" fill="#7b2fff" opacity="0.4"/>
+        </g>
+        <!-- Code lines -->
+        <line x1="120" y1="170" x2="180" y2="170" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
+        <line x1="200" y1="170" x2="260" y2="170" stroke="rgba(123,47,255,0.3)" stroke-width="1.5"/>
+        <line x1="130" y1="190" x2="250" y2="190" stroke="rgba(0,229,255,0.2)" stroke-width="1.5"/>
+        <line x1="150" y1="210" x2="230" y2="210" stroke="rgba(123,47,255,0.2)" stroke-width="1.5"/>
+        <!-- Center diamond -->
+        <polygon points="190,165 205,190 190,215 175,190" fill="none" stroke="rgba(0,229,255,0.5)" stroke-width="1.5"/>
+        <polygon points="190,173 199,190 190,207 181,190" fill="rgba(0,229,255,0.08)"/>
+        <!-- Corner brackets -->
+        <path d="M70 70 L70 90 L90 90" stroke="rgba(0,229,255,0.4)" stroke-width="1.5" fill="none"/>
+        <path d="M310 70 L310 90 L290 90" stroke="rgba(0,229,255,0.4)" stroke-width="1.5" fill="none"/>
+        <path d="M70 310 L70 290 L90 290" stroke="rgba(123,47,255,0.4)" stroke-width="1.5" fill="none"/>
+        <path d="M310 310 L310 290 L290 290" stroke="rgba(123,47,255,0.4)" stroke-width="1.5" fill="none"/>
+      </svg>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="reveal">
+      <p class="section-label">Sobre mim</p>
+      <h2>Código limpo.<br>Sistemas sólidos.</h2>
+      <p>Sou desenvolvedor com dupla especialização: construo sistemas de gameplay em Unreal Engine 5 com C++ e desenvolvo backends robustos com Java e Spring Boot.</p>
+      <p>Minha abordagem une precisão de engenharia com criatividade — seja projetando uma IA de NPCs ou arquitetando uma API REST escalável.</p>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="skill-item">
+        <h4>Unreal Engine 5</h4>
+        <p>C++, Blueprints, sistemas de gameplay, IA, física</p>
+      </div>
+      <div class="skill-item">
+        <h4>Java & Spring</h4>
+        <p>Spring Boot, REST APIs, microsserviços, JPA</p>
+      </div>
+      <div class="skill-item">
+        <h4>Sistemas de IA</h4>
+        <p>FSMs, árvores de comportamento, pathfinding</p>
+      </div>
+      <div class="skill-item">
+        <h4>Arquitetura</h4>
+        <p>Design orientado a eventos, delegates, padrões escaláveis</p>
+      </div>
+      <div class="skill-item">
+        <h4>Banco de Dados</h4>
+        <p>PostgreSQL, MySQL, modelagem relacional</p>
+      </div>
+      <div class="skill-item">
+        <h4>DevOps</h4>
+        <p>Git, Docker, CI/CD, integração com pipelines</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PROJECTS -->
+  <section class="projects" id="projects">
+    <div class="projects-header reveal">
+      <div>
+        <p class="section-label">Trabalhos</p>
+        <h2>Projetos</h2>
+      </div>
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="game">Game Dev</button>
+        <button class="filter-btn" data-filter="java">Java</button>
+      </div>
+    </div>
+
+    <!-- Featured -->
+    <div class="featured-project reveal" data-category="game">
+      <div class="project-media">
+        <iframe src="https://www.youtube.com/embed/uf2axil5GEQ" title="The Raid" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="project-info">
+        <p class="project-number">PROJETO DESTAQUE / 001</p>
+        <h3>The Raid</h3>
+        <div class="tag-list">
+          <span class="tag">AI Systems</span>
+          <span class="tag">Buoyancy</span>
+          <span class="tag">FSM</span>
+          <span class="tag">C++</span>
+        </div>
+        <p>Protótipo de gameplay focado em comportamento de IA e um sistema de flutuação customizado para simular interação e estabilidade na água.</p>
+        <p><strong>Solução:</strong> IA baseada em estados (FSM) + sistema de flutuação para simulação física realista.</p>
+        <p><strong>Resultado:</strong> Equilíbrio entre precisão de simulação e performance — tema da minha monografia de TCC.</p>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="projects-grid">
+      <div class="project-card reveal" data-category="game">
+        <div class="project-media">
+          <iframe src="https://www.youtube.com/embed/hY4Wt7T6EsU?si=Ic5U7IwCOKHKxnDO" title="Obstacle Assault" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="project-info">
+          <p class="project-number">002</p>
+          <h3>Obstacle Assault</h3>
+          <div class="tag-list">
+            <span class="tag">C++</span>
+            <span class="tag">Actors</span>
+            <span class="tag">UE5</span>
+          </div>
+          <p>Projeto focado em manipulação de Actors com Unreal Engine C++, sistemas de movimento e lifecycle de componentes.</p>
+        </div>
+      </div>
+      <div class="project-card reveal" data-category="game">
+        <div class="project-media">
+          <iframe src="https://www.youtube.com/embed/ahGNLr8clEQ?si=7OIE-fpq4b8jyAhF" title="DungeonScape" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="project-info">
+          <p class="project-number">003</p>
+          <h3>DungeonScape</h3>
+          <div class="tag-list">
+            <span class="tag">C++</span>
+            <span class="tag">Delegates</span>
+            <span class="tag">Event-Driven</span>
+          </div>
+          <p>Sistema de comunicação entre Actors usando Delegates e design orientado a eventos para máxima modularidade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <p class="section-label">Contato</p>
+    <h2>Vamos <span class="accent">trabalhar</span><br>juntos?</h2>
+    <p>Aberto a oportunidades em desenvolvimento de jogos e backend Java.<br>Sinta-se à vontade para entrar em contato.</p>
+    <div class="contact-links">
+      <a href="mailto:victorrmeijerink@gmail.com" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        victorrmeijerink@gmail.com
+      </a>
+      <a href="https://github.com/victorramos12" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/victor-meijerink/" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© <span id="year"></span> Victor R. Meijerink. Todos os direitos reservados.</p>
+    <div style="display:flex;align-items:center;gap:0.6rem;">
+      <div class="footer-dot"></div>
+      <p style="font-size:0.65rem;">Disponível para projetos</p>
+    </div>
+  </footer>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+    });
+    function animateRing() {
+      rx += (mx - rx - 18) * 0.12;
+      ry += (my - ry - 18) * 0.12;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.transform += ' scale(2)';
+        ring.style.width = '50px'; ring.style.height = '50px';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.width = '36px'; ring.style.height = '36px';
+      });
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Filter buttons
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projectItems = document.querySelectorAll('[data-category]');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        projectItems.forEach(item => {
+          if (filter === 'all' || item.dataset.category === filter) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
